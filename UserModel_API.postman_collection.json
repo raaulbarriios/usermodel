@@ -1,13 +1,13 @@
 {
 	"info": {
 		"_postman_id": "b3e91a62-4217-4e76-8fa8-69e1b2f4f210",
-		"name": "UserModel API - Laravel",
-		"description": "Colección completa con todas las llamadas para probar la API del modelo User en Laravel",
+		"name": "UserModel API - Laravel (Tokens)",
+		"description": "Colección con las 4 llamadas requeridas para la API de User y Token en Laravel",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "1. GET - Devuelve paginación de 10 usuarios",
+			"name": "1. GET - Obtener los 10 primeros usuarios",
 			"request": {
 				"method": "GET",
 				"header": [
@@ -25,7 +25,8 @@
 					"path": [
 						"get"
 					]
-				}
+				},
+				"description": "Obtiene la lista de los 10 primeros usuarios registrados."
 			},
 			"response": []
 		},
@@ -57,12 +58,28 @@
 					"path": [
 						"create"
 					]
-				}
+				},
+				"description": "Crea un usuario hasheando la contraseña antes de guardarla en la base de datos."
 			},
 			"response": []
 		},
 		{
-			"name": "3. LOGIN - Autenticar usuario",
+			"name": "3. LOGIN - Iniciar sesión (Genera token)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var response = pm.response.json();",
+							"if (response.success && response.data) {",
+							"    pm.collectionVariables.set(\"token\", response.data);",
+							"    console.log(\"Token guardado automáticamente:\", response.data);",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "POST",
 				"header": [
@@ -79,7 +96,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"email\": \"juan@example.com\",\n  \"password\": \"password123\"\n}"
+					"raw": "{\n  \"email\": \"carlos@example.com\",\n  \"password\": \"password123\"\n}"
 				},
 				"url": {
 					"raw": "{{base_url}}/login",
@@ -89,14 +106,15 @@
 					"path": [
 						"login"
 					]
-				}
+				},
+				"description": "Inicia sesión verificando credenciales, borra tokens previos y devuelve un nuevo token de sesión que se guarda automáticamente en la variable {{token}}."
 			},
 			"response": []
 		},
 		{
-			"name": "4. UPDATE USERNAME - Actualizar username",
+			"name": "4. UPDATE NAME - Actualizar nombre con token",
 			"request": {
-				"method": "POST",
+				"method": "PUT",
 				"header": [
 					{
 						"key": "Content-Type",
@@ -111,145 +129,18 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"email\": \"juan@example.com\",\n  \"password\": \"password123\",\n  \"username\": \"nuevo_juanperez\"\n}"
+					"raw": "{\n  \"token\": \"{{token}}\",\n  \"name\": \"Carlos Rodríguez Actualizado\"\n}"
 				},
 				"url": {
-					"raw": "{{base_url}}/update_username",
+					"raw": "{{base_url}}/update_name",
 					"host": [
 						"{{base_url}}"
 					],
 					"path": [
-						"update_username"
+						"update_name"
 					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "5. UPDATE EMAIL - Actualizar email",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					},
-					{
-						"key": "Accept",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"email\": \"juan@example.com\",\n  \"password\": \"password123\",\n  \"new_email\": \"juan.nuevo@example.com\"\n}"
 				},
-				"url": {
-					"raw": "{{base_url}}/update_email",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"update_email"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "6. UPDATE PASSWORD - Actualizar contraseña",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					},
-					{
-						"key": "Accept",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"email\": \"juan@example.com\",\n  \"password\": \"password123\",\n  \"new_password\": \"nueva_password_456\"\n}"
-				},
-				"url": {
-					"raw": "{{base_url}}/update_password",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"update_password"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "7. DELETE - Eliminar usuario",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					},
-					{
-						"key": "Accept",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"email\": \"juan@example.com\",\n  \"password\": \"password123\"\n}"
-				},
-				"url": {
-					"raw": "{{base_url}}/delete",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"delete"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "8. ROOT REQUEST - Petición a http://usermodel.test/",
-			"request": {
-				"method": "PATCH",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					},
-					{
-						"key": "Accept",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"name\": \"Usuario Raíz\",\n  \"username\": \"usuarioraiz\",\n  \"email\": \"raiz@example.com\",\n  \"password\": \"password123\"\n}"
-				},
-				"url": {
-					"raw": "{{base_url}}/",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						""
-					]
-				}
+				"description": "Actualiza el campo name pasándole el token de sesión y el nuevo nombre."
 			},
 			"response": []
 		}
@@ -258,6 +149,11 @@
 		{
 			"key": "base_url",
 			"value": "http://usermodel.test",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
 			"type": "string"
 		}
 	]
